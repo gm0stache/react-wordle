@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-import { sample } from "../../utils";
+import { NUM_OF_GUESSES_ALLOWED } from "../../constants.js";
 import { WORDS } from "../../data";
 import { checkGuess } from "../../game-helpers.js";
+import { sample } from "../../utils";
+import Banner from "../Banner/Banner";
 import Input from "../Input/Input";
-import { NUM_OF_GUESSES_ALLOWED } from "../../constants.js";
 
 // Pick a random word on every pageload.
 const answer = sample(WORDS);
@@ -29,6 +30,18 @@ function getGuesses(arr) {
 
 function Game() {
   const [guessedWords, setGuessedWords] = useState([]);
+  const [gameState, setGameState] = useState({
+    finished: false,
+    playerWon: false,
+  });
+
+  useEffect(() => {
+    if (guessedWords.length === NUM_OF_GUESSES_ALLOWED) {
+      setGameState(() => {
+        return { finished: true, playerWon: false };
+      });
+    }
+  }, [guessedWords]);
 
   return (
     <>
@@ -53,10 +66,15 @@ function Game() {
       <Input
         setWord={(w) => {
           const checkResult = checkGuess(w.padEnd(answerLenght, " "), answer);
+          if (checkResult.every((r) => r.status === "correct")) {
+            setGameState({ finished: true, playerWon: true });
+          }
           const nextGuessedWords = [...guessedWords, checkResult];
           setGuessedWords(nextGuessedWords);
         }}
+        disabled={gameState.finished}
       />
+      {gameState.finished && <Banner playerWon={gameState.playerWon} />}
     </>
   );
 }

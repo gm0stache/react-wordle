@@ -1,7 +1,7 @@
 import { React, useState } from "react";
 import { NUM_OF_GUESSES_ALLOWED } from "../../constants.js";
 
-function Input({ setWord }) {
+function Input({ setWord, disabled }) {
   const [word, setWordTemp] = useState("");
 
   return (
@@ -21,6 +21,7 @@ function Input({ setWord }) {
         maxLength={NUM_OF_GUESSES_ALLOWED}
         onChange={(e) => setWordTemp(e.target.value)}
         value={word}
+        disabled={disabled}
       />
     </form>
   );
