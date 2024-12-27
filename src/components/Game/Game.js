@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 import { sample } from "../../utils";
 import { WORDS } from "../../data";
+import { checkGuess } from "../../game-helpers.js";
 import Input from "../Input/Input";
 import { NUM_OF_GUESSES_ALLOWED } from "../../constants.js";
 
@@ -10,17 +11,20 @@ const answer = sample(WORDS);
 // To make debugging easier, we'll log the solution in the console.
 console.info({ answer });
 
+const answerLenght = answer.length;
+
 function getGuesses(arr) {
-  arr = arr.filter((x) => x !== "");
+  arr = arr.filter((x) => x[0].letter !== "");
 
   const arrLength = Array.isArray(arr) ? arr.length : 0;
-  if (arrLength < 6) {
-    for (let i = 6 - arrLength; i > 0; i--) {
-      arr.push("");
+  if (arrLength < answerLenght) {
+    for (let i = answerLenght - arrLength; i > 0; i--) {
+      const emptyWord = Array(answerLenght).fill({ letter: "", status: "" });
+      arr.push(emptyWord);
     }
   }
 
-  return arr.reverse().slice(0, 6).reverse();
+  return arr.reverse().slice(0, NUM_OF_GUESSES_ALLOWED).reverse();
 }
 
 function Game() {
@@ -32,23 +36,24 @@ function Game() {
         {getGuesses(guessedWords).map((w) => {
           return (
             <p className="guess" key={crypto.randomUUID()}>
-              {w
-                .padEnd(NUM_OF_GUESSES_ALLOWED, " ")
-                .split("")
-                .map((c) => {
-                  return (
-                    <span className="cell" key={crypto.randomUUID()}>
-                      {c}
-                    </span>
-                  );
-                })}
+              {w.map((c) => {
+                return (
+                  <span
+                    className={`cell ${c.status}`}
+                    key={crypto.randomUUID()}
+                  >
+                    {c.letter}
+                  </span>
+                );
+              })}
             </p>
           );
         })}
       </div>
       <Input
         setWord={(w) => {
-          const nextGuessedWords = [...guessedWords, w];
+          const checkResult = checkGuess(w.padEnd(answerLenght, " "), answer);
+          const nextGuessedWords = [...guessedWords, checkResult];
           setGuessedWords(nextGuessedWords);
         }}
       />
