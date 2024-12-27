@@ -18,7 +18,12 @@
     "predev": "rimraf .parcel-cache dist",
     "dev": "parcel public/index.html",
     "build": "parcel build public/index.html",
-    "new-component": "new-component"
+    "new-component": "new-component",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix"
   },
-  "browserslist": "> 0.5%, last 2 versions, not dead"
+  "browserslist": "> 0.5%, last 2 versions, not dead",
+  "devDependencies": {
+    "eslint-plugin-spellcheck": "^0.0.20"
+  }
 }
