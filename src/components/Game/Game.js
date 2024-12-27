@@ -1,8 +1,8 @@
-import { React, useState, useEffect } from 'react';
+import React, { useState } from "react";
 
-import { sample } from '../../utils';
-import { WORDS } from '../../data';
-import Input from '../Input/Input';
+import { sample } from "../../utils";
+import { WORDS } from "../../data";
+import Input from "../Input/Input";
 import { NUM_OF_GUESSES_ALLOWED } from "../../constants.js";
 
 // Pick a random word on every pageload.
@@ -11,51 +11,47 @@ const answer = sample(WORDS);
 console.info({ answer });
 
 function getGuesses(arr) {
-  const arrLenght = Array.isArray(arr) ? arr.lenght : 0;
+  arr = arr.filter((x) => x !== "");
 
-  if (arrLenght >= 6) {
-    console.log("test");
-
-    return arr.slice(arrLenght - 6 - 1, arrLenght - 1);
+  const arrLength = Array.isArray(arr) ? arr.length : 0;
+  if (arrLength < 6) {
+    for (let i = 6 - arrLength; i > 0; i--) {
+      arr.push("");
+    }
   }
 
-  let result = [];
-  for (let i = (6 - arrLenght); i > 0; i--) {
-    result.push("");
-  }
-
-  console.log("test2");
-  return result;
+  return arr.reverse().slice(0, 6).reverse();
 }
 
 function Game() {
   const [guessedWords, setGuessedWords] = useState([]);
-  // const [relevantGuesses, setRelevantGuesses] = useState(() => getGuesses(guessedWords));
-
-  // useEffect(() => {
-  //   console.log("guessedWords in 'useEffect': " + guessedWords);
-  //   console.log("updating relevantGuesses: " + getGuesses(guessedWords));
-
-  //   setRelevantGuesses(getGuesses(guessedWords));
-  // }, [guessedWords])
 
   return (
     <>
       <div className="guess-results">
-        {guessedWords.map(w => {
+        {getGuesses(guessedWords).map((w) => {
           return (
             <p className="guess" key={crypto.randomUUID()}>
-              {w.padEnd(NUM_OF_GUESSES_ALLOWED, " ").split('').map(c => {
-                return <span className="cell" key={crypto.randomUUID()}>{c}</span>
-              })}
+              {w
+                .padEnd(NUM_OF_GUESSES_ALLOWED, " ")
+                .split("")
+                .map((c) => {
+                  return (
+                    <span className="cell" key={crypto.randomUUID()}>
+                      {c}
+                    </span>
+                  );
+                })}
             </p>
-          )
+          );
         })}
       </div>
-      <Input setWord={(w) => {
-        const nextGuessedWords = [...guessedWords, w];
-        setGuessedWords(nextGuessedWords);
-      }} />
+      <Input
+        setWord={(w) => {
+          const nextGuessedWords = [...guessedWords, w];
+          setGuessedWords(nextGuessedWords);
+        }}
+      />
     </>
   );
 }
